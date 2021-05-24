@@ -1,0 +1,80 @@
+version: '3.7'
+services:
+
+  # Nginx
+  nginx:
+    container_name: ${APP_NAME}_nginx
+    build:
+      context: docker/services/nginx
+      args:
+        APP_NAME: ${APP_NAME}
+        APP_ENV:  ${APP_ENV}
+        USER: ${USER}
+        UID:  ${UID}
+        GID:  ${GID}
+    image: ${APP_NAME}/nginx
+    restart: always
+    depends_on:
+      - php
+    ports:
+      - ${APP_PORT}:8080
+    volumes:
+      - php-fpm:/var/run/php
+      - ./docker/common/.profile:/home/${USER}/.profile:ro
+      - ./server/public:/server/public:ro
+      - ./server/storage/app/public:/server/storage/app/public:ro
+    working_dir: /server
+
+  # PHP
+  php:
+    container_name: ${APP_NAME}_php
+    build:
+      context: docker/services/php
+      args:
+        USER: ${USER}
+        UID:  ${UID}
+        GID:  ${GID}
+    environment:
+      PHP_OPCACHE_REVALIDATE_FREQ: ${PHP_OPCACHE_REVALIDATE_FREQ}
+      PHP_XDEBUG_MODE: ${PHP_XDEBUG_MODE}
+    image: ${APP_NAME}/php
+    restart: always
+    volumes:
+      - php-fpm:/var/run/php
+      - ./docker/common/.profile:/home/${USER}/.profile:ro
+      - ./server:/server:rw
+    working_dir: /server
+
+  # Node
+  node:
+    container_name: ${APP_NAME}_node
+    build:
+      context: docker/services/node
+      args:
+        USER: ${USER}
+        UID:  ${UID}
+        GID:  ${GID}
+    image: ${APP_NAME}/node
+    volumes:
+      - ./docker/common/.profile:/home/${USER}/.profile:ro
+      - ./server:/server:rw
+    working_dir: /server
+
+  # Adminer
+  adminer:
+    container_name: ${APP_NAME}_adminer
+    build:
+      context: docker/services/adminer
+    image: ${APP_NAME}/adminer
+    restart: always
+    expose:
+      - 8080
+
+volumes:
+  php-fpm:
+    name: ${APP_NAME}-php-fpm
+    external: false
+  db-data:
+    name: ${APP_NAME}-db-data
+    external: false
+

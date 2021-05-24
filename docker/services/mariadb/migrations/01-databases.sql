@@ -1,0 +1,5 @@
+CREATE DATABASE IF NOT EXISTS app;
+
+CREATE USER 'user'@'%' IDENTIFIED BY 'pass';
+
+GRANT ALL PRIVILEGES ON app.* TO 'user'@'%';

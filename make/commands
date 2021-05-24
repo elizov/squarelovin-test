@@ -1,0 +1,101 @@
+# Custom commands
+
+
+## tinker: Artisan tinker
+.PHONY: tinker
+tinker:
+	$(DOCKER_PHP) php artisan tinker
+
+
+## vendor: Install all dependencies (composer + npm)
+.PHONY: vendor
+vendor: composer npm
+
+
+## composer: Install composer dependencies
+.PHONY: composer
+composer:
+	$(DOCKER_PHP) composer install
+	$(DOCKER_PHP) rm ./vendor/laravel/dusk/bin/chromedriver-linux
+	$(DOCKER_PHP) ln -s /usr/lib/chromium/chromedriver ./vendor/laravel/dusk/bin/chromedriver-linux
+
+
+## npm: Install npm dependencies
+.PHONY: npm
+npm:
+	$(DOCKER_NODE) npm install
+
+
+## build: Run npm prod. Build in the production mode
+.PHONY: build
+build:
+	$(DOCKER_NODE) npm run prod
+
+
+## build-dev: Run npm dev
+.PHONY: build-dev
+build-dev:
+	$(DOCKER_NODE) npm run dev
+
+
+## watch: Run npm watch
+.PHONY: watch
+watch:
+	$(DOCKER_NODE) npm run watch
+
+
+## migrate: Apply migrations
+.PHONY: migrate
+migrate:
+	$(DOCKER_PHP) php artisan migrate --path=/database/migrations/*
+
+
+## migrate-back: Rollback migrations
+.PHONY: migrate-back
+migrate-back:
+	$(DOCKER_PHP) php artisan migrate:rollback --path=/database/migrations/*
+
+
+## fresh: Refresh database
+.PHONY: fresh
+fresh:
+	$(DOCKER_PHP) php artisan migrate:fresh --seed --path=/database/migrations/*
+
+
+## ide-help: Generate the IDE helper
+.PHONY: ide-help
+ide-help:
+	-@$(DOCKER_PHP) php artisan ide-helper:generate
+
+
+## autoload: Composer dump autoload
+.PHONY: autoload
+autoload:
+	$(DOCKER_PHP) composer dumpautoload
+
+
+## lint: Run lint
+.PHONY: lint
+lint:
+	$(DOCKER_PHP) /home/${USER}/.composer/vendor/bin/tlint
+
+
+## unit: Run unit tests
+.PHONY: unit
+unit:
+	$(DOCKER_PHP) php artisan config:clear
+	$(DOCKER_PHP) ./vendor/bin/phpunit
+
+
+## dusk: Run dusk tests
+.PHONY: dusk
+dusk:
+	$(DOCKER_PHP) php artisan config:clear
+	$(DOCKER_PHP) php artisan dusk --env=testing
+
+
+## test: Run tests
+.PHONY: test
+test:
+	$(MAKE) unit
+	$(MAKE) dusk

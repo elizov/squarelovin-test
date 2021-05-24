@@ -1,0 +1,44 @@
+# Docker commands
+
+
+## ---
+
+
+DOCKER_COMPOSE = docker-compose -f docker-compose.yml
+
+# Database
+ifeq ($(ARCH), arm)
+	DOCKER_COMPOSE := $(DOCKER_COMPOSE) -f ./docker/services/mariadb/docker-compose.yml
+else
+	DOCKER_COMPOSE := $(DOCKER_COMPOSE) -f ./docker/services/mysql/docker-compose.yml
+endif
+
+
+## up: Start containers
+.PHONY: $(COMMAND_DOCKER_UP)
+$(COMMAND_DOCKER_UP):
+	$(DOCKER_COMPOSE) up --build -d
+	$(MAKE) $(COMMAND_DOCKER_PROCESSES)
+
+
+## down: Stop containers
+.PHONY: $(COMMAND_DOCKER_DOWN)
+$(COMMAND_DOCKER_DOWN):
+	$(DOCKER_COMPOSE) down
+
+
+## rs: Restart containers
+.PHONY: $(COMMAND_DOCKER_RESTART)
+$(COMMAND_DOCKER_RESTART): $(COMMAND_DOCKER_DOWN) $(COMMAND_DOCKER_UP)
+
+
+## ps: Show containers status
+.PHONY: $(COMMAND_DOCKER_PROCESSES)
+$(COMMAND_DOCKER_PROCESSES):
+	$(DOCKER_COMPOSE) ps
+
+
+## remove: Remove all docker data
+.PHONY: remove
+remove:
+	$(DOCKER_COMPOSE) down --rmi all -v

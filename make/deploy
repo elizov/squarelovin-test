@@ -1,0 +1,37 @@
+# Deployment
+
+
+## ---
+
+
+## deploy-local: Deployment at the local
+.PHONY: deploy-local
+deploy-local:
+	@if [ ! -f .env ]; then \
+	    read -p "Application name (Without spaces. It'll be used for the hostname): " APP_NAME; \
+	    cp .env.example .env; \
+	    SED_TEMPLATE="s|APP_NAME=|APP_NAME=$$APP_NAME|g"; \
+        sed -i $$SED_TEMPLATE .env; \
+        HOST_NAME="$$APP_NAME.local"; \
+        echo "Your host name is: $$HOST_NAME"; \
+        if ! grep -q $$HOST_NAME /etc/hosts; then echo "127.0.0.1 $$HOST_NAME" | sudo tee -a /etc/hosts; fi \
+    fi
+	@if ! grep -q 'adminer.local' /etc/hosts; then echo '127.0.0.1 adminer.local' | sudo tee -a /etc/hosts; fi
+	@if ! grep -q 'mailhog.local' /etc/hosts; then echo '127.0.0.1 mailhog.local' | sudo tee -a /etc/hosts; fi
+	@if ! grep -q 'storage.local' /etc/hosts; then echo '127.0.0.1 storage.local' | sudo tee -a /etc/hosts; fi
+	@if [ ! -f ./server/.env ]; then cp ./server/.env.example ./server/.env; fi
+	@echo Creating of containers
+	@$(MAKE) up
+	@echo Vendor installation
+	@$(MAKE) vendor
+	@echo Migrations
+	@$(MAKE) migrate
+	@$(DOCKER_PHP) php artisan key:generate
+	@$(DOCKER_PHP) php artisan storage:link
+	@$(DOCKER_PHP) php artisan passport:keys
+	@$(MAKE) ide-help
+	@$(MAKE) build-dev
+	@echo "--------------------------------------------------"
+	@echo "| The deployment has been successfully completed |"
+	@echo "--------------------------------------------------"
+

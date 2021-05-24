@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+
+  # MariaDB
+  db:
+    container_name: ${APP_NAME}_db
+    build:
+      context: docker/services/mariadb
+    image: ${APP_NAME}/mariadb
+    restart: always
+    expose:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./docker/common/.profile:/root/.profile:ro

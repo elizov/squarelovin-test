@@ -1,0 +1,40 @@
+# Docker containers
+
+
+## ---
+
+
+DOCKER_NODE  = $(DOCKER_COMPOSE) run --rm node
+DOCKER_NGINX = $(DOCKER_COMPOSE) exec --user $(USER) nginx
+DOCKER_PHP   = $(DOCKER_COMPOSE) exec php
+DOCKER_MYSQL = $(DOCKER_COMPOSE) exec db
+
+
+## node: Enter into node.js container
+.PHONY: node
+node:
+	$(DOCKER_NODE) sh -l
+
+
+## hot: Run hot reload
+.PHONY: hot
+hot:
+	$(DOCKER_COMPOSE) run --rm -p 8080:8080 node npm run hot
+
+
+## nginx: Enter into nginx container
+.PHONY: nginx
+nginx:
+	$(DOCKER_NGINX) sh -l
+
+
+## mysql: Enter into mysql container
+.PHONY: mysql
+mysql:
+	$(DOCKER_MYSQL) sh -l
+
+
+## php: Enter into php container
+.PHONY: php
+php:
+	$(DOCKER_PHP) sh -l
