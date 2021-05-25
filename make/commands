@@ -47,19 +47,19 @@ watch:
 ## migrate: Apply migrations
 .PHONY: migrate
 migrate:
-	$(DOCKER_PHP) php artisan migrate --path=/database/migrations/*
+	$(DOCKER_PHP) php artisan migrate
 
 
 ## migrate-back: Rollback migrations
 .PHONY: migrate-back
 migrate-back:
-	$(DOCKER_PHP) php artisan migrate:rollback --path=/database/migrations/*
+	$(DOCKER_PHP) php artisan migrate:rollback
 
 
 ## fresh: Refresh database
 .PHONY: fresh
 fresh:
-	$(DOCKER_PHP) php artisan migrate:fresh --seed --path=/database/migrations/*
+	$(DOCKER_PHP) php artisan migrate:fresh --seed
 
 
 ## ide-help: Generate the IDE helper
