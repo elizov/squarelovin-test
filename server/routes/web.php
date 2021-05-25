@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,3 +24,5 @@ Route::resource('import', ImportController::class)->except([
     'show',
     'destroy',
 ]);
+
+Route::resource('product', ProductController::class)->only('index');

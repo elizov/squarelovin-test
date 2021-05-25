@@ -11,7 +11,13 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     </head>
     <body>
-        <div class="container">
+        <nav class="navbar navbar-dark bg-dark fixed-top d-flex justify-content-center">
+          <a class="navbar-brand" href="{{ route('import.create') }}">Import</a>
+          <a class="navbar-brand" href="{{ route('product.index') }}">Products</a>
+        </nav>
+
+        <div class="container" style="margin: 80px auto;">
+
             <div class="row align-items-center justify-content-center">
               <div class="col">
                 @yield('content')

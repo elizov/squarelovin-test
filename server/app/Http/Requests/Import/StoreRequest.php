@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
             'file' => [
                 'required',
                 'file',
-                'mimes:csv,txt',
+                'mimetypes:text/plain,text/csv,text/html',
             ],
         ];
     }

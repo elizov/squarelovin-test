@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+
+    public function productAttrubites()
+    {
+        return $this->belongsToMany(ProductAttribute::class, 'product_attribute_values')
+            ->withPivot('value');
+    }
 }
