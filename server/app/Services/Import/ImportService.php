@@ -59,9 +59,10 @@ class ImportService
         }
 
         DB::transaction(function () use ($f, $fields, $import) {
+            $enabledFields = array_keys($import->mapping);
             $mapping = [];
             foreach ($fields as $index => $field) {
-                if (in_array($field, $import->mapping)) {
+                if (in_array($field, $enabledFields)) {
                     $mapping[$index] = ProductAttribute::firstOrCreate([
                         'name' => $import->mapping[$field],
                     ]);
